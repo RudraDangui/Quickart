@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:quickart_proj/login_page.dart';
 import 'package:quickart_proj/otp_verification_page.dart';
@@ -11,13 +12,30 @@ class RegistrationPage extends StatefulWidget {
 class RegistrationPageState extends State<RegistrationPage> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        body: SingleChildScrollView(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      resizeToAvoidBottomInset: false,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
             const Image(
               image: AssetImage("images/login_page.png"),
               fit: BoxFit.contain,
@@ -40,10 +58,11 @@ class RegistrationPageState extends State<RegistrationPage> {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: TextField(
-                decoration: InputDecoration(
+                controller: _phoneController,
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Color.fromARGB(255, 255, 255, 255),
@@ -63,16 +82,14 @@ class RegistrationPageState extends State<RegistrationPage> {
                   filled: true,
                   fillColor: Color.fromARGB(255, 240, 241, 243),
                 ),
-                keyboardType: TextInputType.numberWithOptions(
-                  decimal: true,
-                  signed: false,
-                ),
+                keyboardType: TextInputType.phone,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: TextField(
-                decoration: InputDecoration(
+                controller: _nameController,
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Color.fromARGB(255, 255, 255, 255),
@@ -95,10 +112,11 @@ class RegistrationPageState extends State<RegistrationPage> {
                 keyboardType: TextInputType.name,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: TextField(
-                decoration: InputDecoration(
+                controller: _emailController,
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Color.fromARGB(255, 255, 255, 255),
@@ -124,78 +142,80 @@ class RegistrationPageState extends State<RegistrationPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: TextField(
+                controller: _passwordController,
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
-                    border: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
+                  border: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color.fromARGB(255, 255, 255, 255),
                     ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color.fromARGB(255, 255, 255, 255),
                     ),
-                    prefixIcon: const Icon(Icons.lock),
-                    iconColor: const Color.fromARGB(255, 56, 71, 78),
-                    hintText: 'Password',
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 56, 71, 78),
+                  ),
+                  prefixIcon: const Icon(Icons.lock),
+                  iconColor: const Color.fromARGB(255, 56, 71, 78),
+                  hintText: 'Password',
+                  hintStyle: const TextStyle(
+                    color: Color.fromARGB(255, 56, 71, 78),
+                  ),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 240, 241, 243),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: const Color.fromARGB(255, 56, 71, 78),
                     ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 240, 241, 243),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                      icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: const Color.fromARGB(255, 56, 71, 78),
-                      ),
-                    )),
+                  ),
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: TextField(
-                obscureText: !_isPasswordVisible,
+                obscureText: !_isConfirmPasswordVisible,
                 decoration: InputDecoration(
-                    border: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
+                  border: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color.fromARGB(255, 255, 255, 255),
                     ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(255, 255, 255, 255),
-                      ),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Color.fromARGB(255, 255, 255, 255),
                     ),
-                    prefixIcon: const Icon(Icons.lock),
-                    iconColor: const Color.fromARGB(255, 56, 71, 78),
-                    hintText: 'Confirm Password',
-                    hintStyle: const TextStyle(
-                      color: Color.fromARGB(255, 56, 71, 78),
+                  ),
+                  prefixIcon: const Icon(Icons.lock),
+                  iconColor: const Color.fromARGB(255, 56, 71, 78),
+                  hintText: 'Confirm Password',
+                  hintStyle: const TextStyle(
+                    color: Color.fromARGB(255, 56, 71, 78),
+                  ),
+                  filled: true,
+                  fillColor: const Color.fromARGB(255, 240, 241, 243),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                      });
+                    },
+                    icon: Icon(
+                      _isConfirmPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: const Color.fromARGB(255, 56, 71, 78),
                     ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 240, 241, 243),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _isConfirmPasswordVisible =
-                              !_isConfirmPasswordVisible;
-                        });
-                      },
-                      icon: Icon(
-                        _isConfirmPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: const Color.fromARGB(255, 56, 71, 78),
-                      ),
-                    )),
+                  ),
+                ),
               ),
             ),
             Padding(
@@ -209,6 +229,14 @@ class RegistrationPageState extends State<RegistrationPage> {
                 ),
                 child: TextButton(
                   onPressed: () {
+                    CollectionReference collref =
+                        FirebaseFirestore.instance.collection('test');
+                    collref.add({
+                      'email': _emailController.text,
+                      'name': _nameController.text,
+                      'password': _passwordController.text,
+                      'phone': _phoneController.text,
+                    });
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -256,8 +284,10 @@ class RegistrationPageState extends State<RegistrationPage> {
                   ),
                 ],
               ),
-            )
-          ]),
-        ));
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
